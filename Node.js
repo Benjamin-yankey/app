@@ -49,6 +49,11 @@ async function initDatabase() {
 // Initialize database on startup
 initDatabase();
 
+// Health check endpoint status code 200
+app.get("/health", (req, res) => {
+  res.sendStatus(200);
+});
+
 // Home page with form
 app.get("/", (req, res) => {
   res.send(`
@@ -166,7 +171,7 @@ app.post("/submit", async (req, res) => {
     // Insert data into database
     const [result] = await pool.query(
       "INSERT INTO contacts (name, email, message) VALUES (?, ?, ?)",
-      [name, email, message]
+      [name, email, message],
     );
 
     console.log("Form submitted and saved to database:");
@@ -245,7 +250,7 @@ app.post("/submit", async (req, res) => {
 app.get("/contacts", async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM contacts ORDER BY created_at DESC"
+      "SELECT * FROM contacts ORDER BY created_at DESC",
     );
 
     let contactsHTML = rows
@@ -258,7 +263,7 @@ app.get("/contacts", async (req, res) => {
         <p class="date">${new Date(contact.created_at).toLocaleString()}</p>
         <button onclick="deleteContact(${contact.id})">Delete</button>
       </div>
-    `
+    `,
       )
       .join("");
 
